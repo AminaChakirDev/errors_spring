@@ -27,9 +27,10 @@ public class Article {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    private String imageUrl;
+
+    @ManyToOne
     @JoinColumn(name = "category_id")
-    @JsonIgnore
     private Category category;
 
     public Article() { }
@@ -88,5 +89,13 @@ public class Article {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
