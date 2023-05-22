@@ -57,6 +57,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -73,7 +74,9 @@ public class AuthController {
                     userDetails.getUsername(),
                     userDetails.getEmail(),
                     roles));
-
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email et/ou mot de passe incorrect");
+        }
     }
 
     @PostMapping("/signup")
