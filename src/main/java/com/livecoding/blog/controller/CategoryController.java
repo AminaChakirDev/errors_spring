@@ -7,35 +7,36 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @CrossOrigin
+@RequestMapping("/api/categories")
 @RestController
 public class CategoryController {
 
     @Autowired
     CategoryRepository categoryRepository;
 
-    @GetMapping("/categories")
+    @GetMapping("")
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-    @GetMapping("/categories/{categoryId}")
+    @GetMapping("/{categoryId}")
     public Category getCategoryById(@PathVariable Long categoryId) {
         return categoryRepository.findById(categoryId).get();
     }
 
-    @PostMapping("/categories")
+    @PostMapping("")
     public Category createCategory(@RequestBody Category body) {
         return categoryRepository.save(body);
     }
 
-    @PutMapping("/categories/{categoryId}")
+    @PutMapping("/{categoryId}")
     public Category updateCategory(@PathVariable Long categoryId, @RequestBody Category body) {
         Category categoryToUpdate = categoryRepository.findById(categoryId).get();
         categoryToUpdate.setName(body.getName());
         return categoryRepository.save(categoryToUpdate);
     }
 
-    @DeleteMapping("/categories/{categoryId}")
+    @DeleteMapping("/{categoryId}")
     public Boolean deleteCategoryById(@PathVariable Long categoryId) {
         categoryRepository.deleteById(categoryId);
         return true;
