@@ -34,73 +34,41 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getArticleById(@PathVariable Long id) {
-        try {
-            Optional<Article> optionalArticle = articleRepository.findById(id);
-            if (optionalArticle.isPresent()) {
-                Article article = optionalArticle.get();
-                return ResponseEntity.ok(article);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cet article n'existe pas");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue. L'opération n'a pu aboutir");
-        }
+    public Article getArticleById(@PathVariable Long id) {
+        Optional<Article> optionalArticle = articleRepository.findById(id);
+        Article article = optionalArticle.get();
+        return article;
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createArticle(@RequestParam(required = true) Long category, @RequestBody Article article) {
-        try {
-            Optional<Category> optionalCategoryToUse = categoryRepository.findById(category);
-            if(optionalCategoryToUse.isPresent()) {
-                Category categoryToUse = optionalCategoryToUse.get();
-                article.setCategory(categoryToUse);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cette catégorie n'existe pas");
-            }
-            Article createdArticle = articleRepository.save(article);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdArticle);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue. L'opération n'a pu aboutir");
-        }
+    public Article createArticle(@RequestParam(required = true) Long category, @RequestBody Article article) {
+        Optional<Category> optionalCategoryToUse = categoryRepository.findById(category);
+        Category categoryToUse = optionalCategoryToUse.get();
+        article.setCategory(categoryToUse);
+        Article createdArticle = articleRepository.save(article);
+        return createdArticle;
     }
 
     @PutMapping("/{articleId}")
-    public ResponseEntity<?> updateArticle(@PathVariable Long articleId, @RequestParam(required = false) Long category, @RequestBody Article body) {
-        try {
+    public Article updateArticle(@PathVariable Long articleId, @RequestParam(required = false) Long category, @RequestBody Article body) {
+
             Optional<Article> optionalArticleToUpdate = articleRepository.findById(articleId);
             Optional<Category> optionalCategoryToUse = categoryRepository.findById(category);
+            Article articleToUpdate = optionalArticleToUpdate.get();
+            Category categoryToUse = optionalCategoryToUse.get();
+            articleToUpdate.setTitle(body.getTitle());
+            articleToUpdate.setContent(body.getContent());
+            articleToUpdate.setSlug(body.getSlug());
+            articleToUpdate.setCategory(categoryToUse);
 
-            if (optionalArticleToUpdate.isPresent() && optionalCategoryToUse.isPresent()) {
-                Article articleToUpdate = optionalArticleToUpdate.get();
-                Category categoryToUse = optionalCategoryToUse.get();
-                articleToUpdate.setTitle(body.getTitle());
-                articleToUpdate.setContent(body.getContent());
-                articleToUpdate.setSlug(body.getSlug());
-                articleToUpdate.setCategory(categoryToUse);
+            Article updatedArticle = articleRepository.save(articleToUpdate);
 
-                Article updatedArticle = articleRepository.save(articleToUpdate);
-
-                return ResponseEntity.ok(updatedArticle);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cette catégorie et/ou cet article n'existe pas");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue. L'opération n'a pu aboutir");
-        }
+            return updatedArticle;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteArticle(@PathVariable Long id) {
-        try {
-            if(articleRepository.findById(id).isPresent()) {
-                articleRepository.deleteById(id);
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cet article n'existe pas");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue. L'opération n'a pu aboutir");
-        }
+    public boolean deleteArticle(@PathVariable Long id) {
+        articleRepository.deleteById(id);
+        return true;
     }
 }
